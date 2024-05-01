@@ -13,4 +13,4 @@ class Alert(models.Model):
     acknowledge = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.message
