@@ -48,13 +48,10 @@ class Feed(models.Model):
     url = models.URLField()
     parser = models.CharField(max_length=10, choices=TYPE_CHOICES)
     refresh = models.DurationField()
-
+    delimeter = models.CharField(max_length=1, null=True, default=None, blank=True)
+    delimeterField = models.IntegerField(default=0, null=True)
     def __str__(self):
         return f"{self.name} - {self.category.name}"
-
-
-from django.db import models
-from enum import Enum
 
 #########
 # Value #
@@ -68,7 +65,7 @@ class ValueType(Enum):
 class Value(models.Model):
     type = models.CharField(max_length=20, choices=[(tag.value, tag.name) for tag in ValueType])
     description = models.CharField(max_length=250, null=True)
-    value = models.CharField(max_length=500)
-    checkValue = models.IntegerField()
+    value = models.CharField(max_length=500, unique = True)
+    checkValue = models.IntegerField(default=0)
     def __str__(self):
         return f"{self.type} - {self.value}"

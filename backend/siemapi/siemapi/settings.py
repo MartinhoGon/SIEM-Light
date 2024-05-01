@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'rest_framework',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -119,3 +121,47 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CRONJOBS = [
+    ('*/1 * * * *', 'api.management.cronjobs.fetch_data.get_feed', '>> ' + os.path.join(BASE_DIR,'log/cron.log' + ' 2>&1 ')),
+    # Add more cron jobs as needed
+]
+
+# CRON_CLASSES = [
+#     'api.management.commands.fetch_data.FetchFeedCommand',
+# ]
+
+# DJANGO_CRON_SCHEDULE = {
+#     'fetch_data': {
+#         'command': 'api.management.commands.fetch_data',
+#         'schedule': {
+#             'minutes': 1,
+#         },
+#     },
+# }
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'django_cron_file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': '/home/martinho/Projects/SIEM-Light/backend/siemapi/logs/django_cron.log', 
+#             'formatter': 'django_cron_formatter',
+#         },
+#     },
+#     'loggers': {
+#         'django_cron': {
+#             'handlers': ['django_cron_file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     },
+#     'formatters': {
+#         'django_cron_formatter': {
+#             'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+#         }
+#     },
+# }
