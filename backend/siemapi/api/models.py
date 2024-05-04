@@ -1,5 +1,6 @@
 from django.db import models
 from enum import Enum
+import re
 
 #########
 # Alert #
@@ -69,3 +70,52 @@ class Value(models.Model):
     checkValue = models.IntegerField(default=0)
     def __str__(self):
         return f"{self.type} - {self.value}"
+
+    @staticmethod
+    def decrementCheckValue():
+        values = Value.objects.all()
+        for value in values:
+            value.checkValue -= 1
+            value.save()
+
+    @staticmethod
+    def checkType(value):     
+        ip_pattern = r'\b(?:\d{1,3}\.){3}\d{1,3}\b'
+        domain_pattern = r'\b[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\b'
+        port_pattern = r'\b\d{1,5}\b'
+
+        # Check if the value matches any pattern
+        if re.fullmatch(ip_pattern, value):
+            return "IP Address"
+        elif re.fullmatch(domain_pattern, value):
+            return "Domain"
+        elif re.fullmatch(port_pattern, value):
+            return "Port"
+        else:
+            return "Domain"
+
+    @staticmethod
+    def createValues(feed, values):
+        """
+        First checks if value already exists.
+        If it does not exist, creates the entry and then as checkValue puts half of the number of feeds (numFeeds/2)
+        If it does exist, adds to the checkValue +1
+        :param log_path:
+        :return: Array with IP address and datetime
+        """
+
+        numFeeds = Feed.objects.count()
+        for value in values:
+            try:
+                dbValue = Value.objects.get(value=value) 
+                # Exists; Adds to checkValue +1 and saves
+                dbValue.checkValue = dbValue.checkValue + 1
+                dbValue.save()
+            except Value.DoesNotExist:
+                # Does not exist. Create a new entry
+                try:
+                    newValue = Value(value=value, description=feed.category.name,type=Value.checkType(value), checkValue=int(numFeeds/2))
+                    newValue.save()
+                except Exception as error:
+                    print("Error: ", error)
+                    
