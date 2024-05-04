@@ -80,12 +80,15 @@ class Value(models.Model):
 
     @staticmethod
     def checkType(value):     
-        ip_pattern = r'\b(?:\d{1,3}\.){3}\d{1,3}\b'
+        ipv4_pattern = r'\b(?:\d{1,3}\.){3}\d{1,3}\b'
+        ipv6_pattern = r'^([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4}|:)$'
         domain_pattern = r'\b[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\b'
         port_pattern = r'\b\d{1,5}\b'
 
         # Check if the value matches any pattern
-        if re.fullmatch(ip_pattern, value):
+        if re.fullmatch(ipv4_pattern, value):
+            return "IP Address"
+        elif re.fullmatch(ipv6_pattern, value):
             return "IP Address"
         elif re.fullmatch(domain_pattern, value):
             return "Domain"
@@ -103,7 +106,6 @@ class Value(models.Model):
         :param log_path:
         :return: Array with IP address and datetime
         """
-
         numFeeds = Feed.objects.count()
         for value in values:
             try:
