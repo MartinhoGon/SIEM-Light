@@ -116,7 +116,7 @@ class Value(models.Model):
             except Value.DoesNotExist:
                 # Does not exist. Create a new entry
                 try:
-                    newValue = Value(value=value, description=feed.category.name,type=Value.checkType(value), checkValue=int(numFeeds/2))
+                    newValue = Value(value=value.strip(), description=feed.category.name,type=Value.checkType(value), checkValue=int(numFeeds/2))
                     newValue.save()
                 except Exception as error:
                     print("Error: ", error)
