@@ -28,8 +28,6 @@ class StartListener(APIView):
                     return Response({"message": "Listener started."})  
             except Exception as e:
                 return Response({"message": "Error while starting the listener."})
-
-            
         else:
             return Response({"message": "Listener is already running."})
 
