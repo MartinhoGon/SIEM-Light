@@ -5,5 +5,7 @@ from api.models import *
 admin.site.register(Feed)
 admin.site.register(Category)
 admin.site.register(Value)
+admin.site.register(Alert)
+admin.site.register(Helper)
 
 

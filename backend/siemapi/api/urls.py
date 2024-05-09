@@ -16,4 +16,8 @@ urlpatterns = [
     path('value/<int:pk>/', value.ValueDetail.as_view()),
     path('alert/', alert.AlertList.as_view()),
     path('alert/<int:pk>/', alert.AlertDetail.as_view()),
+    # path('start-listener', commands.start_listener),
+    # path('stop-listener', commands.stop_listener),
+    path('start-listener/', commands.StartListener.as_view(), name='start-listener'),
+    path('stop-listener/', commands.StopListener.as_view(), name='stop-listener'),
 ]

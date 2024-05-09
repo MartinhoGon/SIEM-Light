@@ -121,3 +121,11 @@ class Value(models.Model):
                 except Exception as error:
                     print("Error: ", error)
                     
+
+#########
+# Helper  #
+#########
+
+class Helper(models.Model):
+    is_listener_running = models.BooleanField(default=False)
+    listener_pid = models.IntegerField(null=True, blank=True)
