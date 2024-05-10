@@ -73,6 +73,7 @@ class Value(models.Model):
 
     @staticmethod
     def decrementCheckValue():
+        # rever este codigo fazer Query direta
         values = Value.objects.all()
         for value in values:
             value.checkValue -= 1

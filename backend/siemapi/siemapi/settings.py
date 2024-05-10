@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import logging
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -128,40 +129,51 @@ CRONJOBS = [
     # Add more cron jobs as needed
 ]
 
-# CRON_CLASSES = [
-#     'api.management.commands.fetch_data.FetchFeedCommand',
-# ]
+LOG_FILE_PATH = os.path.join(BASE_DIR, 'log/django.log')
 
-# DJANGO_CRON_SCHEDULE = {
-#     'fetch_data': {
-#         'command': 'api.management.commands.fetch_data',
-#         'schedule': {
-#             'minutes': 1,
-#         },
-#     },
-# }
+# Configure logger
+logging.basicConfig(
+    filename=LOG_FILE_PATH,
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
+# Optionally, define a custom logger name
+CUSTOM_LOGGER_NAME = 'djangoLogger'
+
+# # Set up logging
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,
 #     'handlers': {
-#         'django_cron_file': {
+#         'file': {
 #             'level': 'DEBUG',
 #             'class': 'logging.FileHandler',
-#             'filename': '/home/martinho/Projects/SIEM-Light/backend/siemapi/logs/django_cron.log', 
-#             'formatter': 'django_cron_formatter',
+#             'filename': os.path.join(BASE_DIR, 'log/django.log'),
+#             'formatter': 'verbose',
+#         }
+#         # 'console': {
+#         #     'level': 'DEBUG',
+#         #     'class': 'logging.StreamHandler',
+#         #     'formatter': 'verbose',
+#         # },
+#     },
+#     'formatters': {
+#         'verbose': {
+#             'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
 #         },
 #     },
 #     'loggers': {
-#         'django_cron': {
-#             'handlers': ['django_cron_file'],
+#         'django': {
+#             'handlers': ['file'],
 #             'level': 'DEBUG',
 #             'propagate': True,
 #         },
-#     },
-#     'formatters': {
-#         'django_cron_formatter': {
-#             'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-#         }
+#         'myapp': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#             'propagate': False,
+#         },
 #     },
 # }
+

@@ -6,9 +6,11 @@ from rest_framework.response import Response
 from subprocess import Popen, PIPE
 # import subprocess
 from api.models import Helper
+from api.utils import get_logger, Parser
 
 class StartListener(APIView):
     def post(self, request):
+        logger = get_logger()
         if Helper.objects.exists():
             helper = Helper.objects.first()
         else:
@@ -25,14 +27,17 @@ class StartListener(APIView):
                     helper.is_listener_running = True
                     helper.listener_pid = process.pid
                     helper.save()
+                    logger.info('Started the listener')
                     return Response({"message": "Listener started."})  
             except Exception as e:
+                logger.error('Error while starting the listener successfuly')
                 return Response({"message": "Error while starting the listener."})
         else:
             return Response({"message": "Listener is already running."})
 
 class StopListener(APIView):
     def post(self, request):
+        logger = get_logger()
         if Helper.objects.exists():
             helper = Helper.objects.first()
             if helper.is_listener_running:
@@ -41,8 +46,17 @@ class StopListener(APIView):
                 helper.is_listener_running = False
                 helper.listener_pid = 0
                 helper.save()
+                logger.info('Listener stopped successfuly')
                 return Response({"message": "Listener stopped."})
             else:
                 return Response({"message": "Listener is not running."})
         else:
             return Response({"message": "Listener is not running."})
+
+# class StartSniffer(APIView):
+#     def post(self, request):
+#         capture = pyshark.LiveCapture(interface=interface, bpf_filter=shark_filter)
+#         try:
+#             for packet in capture.sniff_continuously(packet_count=100):
+#                 if hasattr(packet, 'dns'):
+#                     pass
