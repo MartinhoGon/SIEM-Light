@@ -1,11 +1,6 @@
-import requests
-from api.models import Value
-import logging
-from django.conf import settings
-
-def get_logger():
-    logger = logging.getLogger(settings.CUSTOM_LOGGER_NAME)
-    return logger
+import requests, pyshark
+from api.models import Value, Alert
+from api.logger import get_logger
 
 class DataFetcher:
     @staticmethod
@@ -38,16 +33,23 @@ class Parser:
         logger = get_logger()
         logger.info('Starting to parse DNS traffic')
         capture = pyshark.FileCapture(file_name)
+        alertCounter = 0
         for packet in capture:
             if hasattr(packet, 'dns'):
                 if packet.dns.count_answers > "0":
-                    # This will crossreference between all the IP addresses and domain names collected by the feeds
-                    # If it gets any match it will create an alert
-                    print("Query:"+ packet.dns.qry_name)
-                    print("DNS Server:"+ packet.ip.src) # neste caso é o ip do dns server
-                    print("Client:"+ packet.ip.dst) # quem fez o pedido
+                    strAlert = ''
+                    if Value.searchValue(packet.dns.qry_name):
+                        strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.dns.qry_name,packet.ip.dst)
+                        alertCounter += Alert.createAlert(packet.dns.qry_name, strAlert)
+                    if Value.searchValue(packet.ip.src):
+                        strAlert = "This IP Address {} returned a response to a DNS query from {}. This IP address is a match to the internal database.".format(packet.ip.src,packet.ip.dst)
+                        alertCounter += Alert.createAlert(packet.dns.qry_name, strAlert)
                     if hasattr(packet.dns, "a"):
-                        print("Response: "+ packet.dns.a)
+                        if Value.searchValue(packet.dns.a):
+                            strAlert = "A DNS request returned a known malicious IP address ({}) from a query made by {}. This IP address is a match to the internal database.".format(packet.ip.a,packet.ip.src)
                     else:
-                        print("Response: "+ packet.dns.ptr_domain_name)
+                        if Value.searchValue(packet.dns.ptr_domain_name):
+                            strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.ptr_domain_name,packet.ip.dst)
+                            alertCounter += Alert.createAlert(packet.dns.qry_name, strAlert)
         logger.info('Endded DNS traffic parsing')
+        return alertCounter

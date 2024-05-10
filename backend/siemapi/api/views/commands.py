@@ -20,7 +20,7 @@ class StartListener(APIView):
             # Start netcat listener
             #process = Popen(['nc -l 32000 > file.pcap'], shell=True, stdout=PIPE, stderr=PIPE)
             try:
-                with open('/home/martinho/file.pcap', 'wb') as output_file:
+                with open('file.pcap', 'wb') as output_file:
                     command = ["nc", "-l", "32000"]
                     process = Popen(command, stdout=output_file, stderr=PIPE)
                     pid = process.pid  # Get the PID of the subprocess
@@ -46,8 +46,9 @@ class StopListener(APIView):
                 helper.is_listener_running = False
                 helper.listener_pid = 0
                 helper.save()
+                numAlerts = Parser.parseDnsPcap('file.pcap')
                 logger.info('Listener stopped successfuly')
-                return Response({"message": "Listener stopped."})
+                return Response({"message": "Listener stopped. The DNS capture returned a total of {} alerts.".format(numAlerts)})
             else:
                 return Response({"message": "Listener is not running."})
         else:

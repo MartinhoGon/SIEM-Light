@@ -1,6 +1,7 @@
 from django.db import models
 from enum import Enum
 import re
+from api.logger import get_logger
 
 #########
 # Alert #
@@ -20,6 +21,38 @@ class Alert(models.Model):
     def __str__(self):
         return self.message
 
+    @staticmethod
+    def checkAlertLevel(checkValue):
+        numFeeds = Feed.objects.count()
+        preLevel = checkValue/numFeeds
+        if preLevel == 1:
+            return 'Critical'
+        elif 0.9 <= preLevel <= 1:
+            return 'High'
+        elif 0.4 <= preLevel < 0.9:
+            return 'Medium'
+        elif 0.24 <= preLevel < 0.4:
+            return 'Low'
+    
+    @staticmethod
+    def createAlert(queryValue, message):
+        logger = get_logger()
+        try:
+            value = Value.objects.filter(value=queryValue)
+            if value.exists():
+                logger.info('Value Exists')
+            alertLevel = Alert.checkAlertLevel(value.checkValue)
+            newMessage = alertLevel+' - '+message
+            alert = Alert(level=alertLevel, message=newMessage, acknowledge=False)
+            alert.save()
+            logger.info('A new alert was created.')
+            return 1
+        except Exception as e:
+            logger.error('There was an error creating a new alert. {}'.format(e))
+            return 0
+
+
+        
 ############
 # Category #
 ############
@@ -122,6 +155,13 @@ class Value(models.Model):
                 except Exception as error:
                     print("Error: ", error)
 
+    @staticmethod
+    def searchValue(queryValue):
+        results = Value.objects.filter(value=queryValue)
+        if results.exists():
+            return True
+        else:
+            return False
 #########
 # Helper  #
 #########
