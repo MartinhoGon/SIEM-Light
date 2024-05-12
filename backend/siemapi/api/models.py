@@ -38,9 +38,9 @@ class Alert(models.Model):
     def createAlert(queryValue, message):
         logger = get_logger()
         try:
-            value = Value.objects.filter(value=queryValue)
-            if value.exists():
-                logger.info('Value Exists')
+            value = Value.objects.filter(value=queryValue).first()
+            # if value is not None:
+                # logger.info('Value Exists {}'.format(value.value))
             alertLevel = Alert.checkAlertLevel(value.checkValue)
             newMessage = alertLevel+' - '+message
             alert = Alert(level=alertLevel, message=newMessage, acknowledge=False)

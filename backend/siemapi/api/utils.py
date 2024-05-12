@@ -40,16 +40,20 @@ class Parser:
                     strAlert = ''
                     if Value.searchValue(packet.dns.qry_name):
                         strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.dns.qry_name,packet.ip.dst)
-                        alertCounter += Alert.createAlert(packet.dns.qry_name, strAlert)
+                        alertCounter = alertCounter + Alert.createAlert(packet.dns.qry_name, strAlert)
                     if Value.searchValue(packet.ip.src):
                         strAlert = "This IP Address {} returned a response to a DNS query from {}. This IP address is a match to the internal database.".format(packet.ip.src,packet.ip.dst)
-                        alertCounter += Alert.createAlert(packet.dns.qry_name, strAlert)
+                        alertCounter = alertCounter + Alert.createAlert(packet.dns.qry_name, strAlert)
                     if hasattr(packet.dns, "a"):
                         if Value.searchValue(packet.dns.a):
                             strAlert = "A DNS request returned a known malicious IP address ({}) from a query made by {}. This IP address is a match to the internal database.".format(packet.ip.a,packet.ip.src)
+                            alertCounter = alertCounter + Alert.createAlert(packet.dns.a, strAlert)
                     else:
-                        if Value.searchValue(packet.dns.ptr_domain_name):
-                            strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.ptr_domain_name,packet.ip.dst)
-                            alertCounter += Alert.createAlert(packet.dns.qry_name, strAlert)
+                        if hasattr(packet.dns,'ptr_domain_name'):
+                            if Value.searchValue(packet.dns.ptr_domain_name):
+                                strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.ptr_domain_name,packet.ip.dst)
+                                alertCounter = alertCounter + Alert.createAlert(packet.dns.qry_name, strAlert)
+                        else:
+                            print(packet.dns)
         logger.info('Endded DNS traffic parsing')
         return alertCounter
