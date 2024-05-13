@@ -18,6 +18,6 @@ urlpatterns = [
     path('alert/<int:pk>/', AlertDetail.as_view()),
     path('start-listener/', StartListener.as_view()),
     path('stop-listener/', StopListener.as_view()),
-    path('start-sniffer/', start_sniffer),
-    path('stop-sniffer/', stop_sniffer),
+    path('start-sniffer/', StartSniffer.as_view()),
+    path('stop-sniffer/', StopSniffer.as_view()),
 ]

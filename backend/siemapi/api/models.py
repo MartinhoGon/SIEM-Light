@@ -42,7 +42,9 @@ class Alert(models.Model):
             # if value is not None:
                 # logger.info('Value Exists {}'.format(value.value))
             alertLevel = Alert.checkAlertLevel(value.checkValue)
-            newMessage = alertLevel+' - '+message
+            current_time = datetime.now()
+            formatted_time = current_time.strftime("%d-%m-%Y %H:%M:%S")
+            newMessage = alertLevel+' - '+formatted_time+' - '+message
             alert = Alert(level=alertLevel, message=newMessage, acknowledge=False)
             alert.save()
             logger.info('A new alert was created.')
@@ -169,4 +171,6 @@ class Value(models.Model):
 class Helper(models.Model):
     is_listener_running = models.BooleanField(default=False)
     listener_pid = models.IntegerField(null=True, blank=True)
+    is_sniffer_running = models.BooleanField(default=False)
+    sniffer_pid = models.IntegerField(null=True, blank=True)
 

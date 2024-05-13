@@ -28,10 +28,10 @@ class StartListener(APIView):
                     helper.listener_pid = process.pid
                     helper.save()
                     logger.info('Started the listener')
-                    return Response({"message": "Listener started."})  
+                    return Response({"message": "Listener started successfully."})  
             except Exception as e:
-                logger.error('Error while starting the listener successfuly')
-                return Response({"message": "Error while starting the listener."})
+                logger.error('Error while starting the listener')
+                return Response({"message": "Error while starting the listener. {}".format(e)})
         else:
             return Response({"message": "Listener is already running."})
 
@@ -54,10 +54,49 @@ class StopListener(APIView):
         else:
             return Response({"message": "Listener is not running."})
 
-# class StartSniffer(APIView):
-#     def post(self, request):
-#         capture = pyshark.LiveCapture(interface=interface, bpf_filter=shark_filter)
-#         try:
-#             for packet in capture.sniff_continuously(packet_count=100):
-#                 if hasattr(packet, 'dns'):
-#                     pass
+class StartSniffer(APIView):
+    def post(self, request):
+        logger = get_logger()
+        if Helper.objects.exists():
+            helper = Helper.objects.first()
+        else:
+            helper = Helper.objects.create()
+        if request.data.get("interface"):
+            interface = request.data.get("interface")
+        else:
+            interface = 'ens33'
+        if not helper.is_sniffer_running:
+            try:
+                process =  Popen(["python", "networkSniffer.py", interface], stdout=PIPE, stderr=PIPE)
+                # stdout_data, stderr_data = process.communicate()
+                # logger.error(stderr_data)
+                pid = process.pid  # Get the PID of the subprocess
+                helper.is_sniffer_running = True
+                helper.sniffer_pid = process.pid
+                helper.save()
+                logger.info('Sniffer started successfuly')
+                return Response({"message": "Sniffer started successfully."}, status=200)
+            except Exception as e:
+                logger.error('Error while starting the sniffer')
+                return Response({"message": "Error while starting the sniffer. {}".format(e)})
+                # return JsonResponse({"error": str(e)}, status=500)
+        else: 
+            return Response({"message": "Sniffer is already running."})
+
+
+class StopSniffer(APIView):
+    def post(self, request):
+        logger = get_logger()
+        if Helper.objects.exists():
+            helper = Helper.objects.first()
+            if helper.is_sniffer_running:
+                os.kill(helper.sniffer_pid, SIGTERM)
+                helper.is_sniffer_running = False
+                helper.sniffer_pid = 0
+                helper.save()
+                logger.info('Sniffer stopped successfuly')
+                return Response({"message": "Sniffer stopped. Check the alerts to see if any were created"})
+            else:
+                return Response({"message": "Sniffer is not running."})
+        else:
+            return Response({"message": "Sniffer is not running."})
