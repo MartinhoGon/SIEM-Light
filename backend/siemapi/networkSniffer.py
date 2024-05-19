@@ -1,12 +1,7 @@
-import os
 import sys
-import django
-import requests
 import pyshark
-# from api.models import Value, Alert
-# from api.logger import get_logger
-# from api.utils import Parser
 import psycopg2
+from datetime import datetime
 
 # Establish a connection to the PostgreSQL database
 class DatabaseHandler:
@@ -38,18 +33,24 @@ class DatabaseHandler:
         else:
             print("No connection to close")
 
-    def execute_query(self, query):
+    def execute_query(self, query, values=None):
         if self.conn is None:
             print("Not connected to the database. Call connect() method first.")
             return
 
         try:
             with self.conn.cursor() as cur:
-                cur.execute(query)
-                result = cur.fetchall()
-                return result
+                if values:
+                    cur.execute(query, values)
+                    self.commit()
+                    return
+                else:
+                    cur.execute(query)
+                    result = cur.fetchall()
+                    return result
         except psycopg2.Error as e:
-            print("Error executing query:", e)
+            print(f"An error occurred: {e}")
+            self.connection.rollback()
 
     def insert_values(self, table, columns, values):
         query = f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({', '.join(['%s' for _ in values])})"
@@ -72,21 +73,26 @@ class NetworkSniffer:
                         strAlert = ''
                         if NetworkSniffer.searchValue(packet.dns.qry_name):
                             strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.dns.qry_name,packet.ip.dst)
-                            alertCounter = alertCounter + Alert.createAlert(packet.dns.qry_name, strAlert)
+                            NetworkSniffer.insertAlert(packet.dns.qry_name, strAlert)
                         if NetworkSniffer.searchValue(packet.ip.src):
                             strAlert = "This IP Address {} returned a response to a DNS query from {}. This IP address is a match to the internal database.".format(packet.ip.src,packet.ip.dst)
-                            alertCounter = alertCounter + Alert.createAlert(packet.dns.qry_name, strAlert)
+                            NetworkSniffer.insertAlert(packet.dns.qry_name, strAlert)
                         if hasattr(packet.dns, "a"):
                             if NetworkSniffer.searchValue(packet.dns.a):
                                 strAlert = "A DNS request returned a known malicious IP address ({}) from a query made by {}. This IP address is a match to the internal database.".format(packet.ip.a,packet.ip.src)
-                                alertCounter = alertCounter + Alert.createAlert(packet.dns.a, strAlert)
+                                NetworkSniffer.insertAlert(packet.dns.a, strAlert)
                         else:
                             if hasattr(packet.dns,'ptr_domain_name'):
                                 if NetworkSniffer.searchValue(packet.dns.ptr_domain_name):
                                     strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.ptr_domain_name,packet.ip.dst)
-                                    alertCounter = alertCounter + Alert.createAlert(packet.dns.qry_name, strAlert)
+                                    NetworkSniffer.insertAlert(packet.dns.qry_name, strAlert)
                             else:
-                                print(packet.dns)
+                                if NetworkSniffer.searchValue(packet.dns.cname):
+                                    strAlert = 'A DNS request to the CNAME {} was made from {}. This CNAME is a match to the internal database'.format(packet.ptr_domain_name,packet.ip.dst)
+                                    NetworkSniffer.insertAlert(packet.dns.cname, strAlert)
+                                # print(packet.dns)
+                                # print(packet.dns.cname)
+                                # pass
         except Exception as e:
             # logger.error('An error occurred while sniffing and parsing packets.')
             print("Error: {}".format(e))
@@ -99,10 +105,8 @@ class NetworkSniffer:
         results = db.execute_query(search_query)
         db.closeConnection()
         if len(results) > 0:
-            print(results)
             return True
         else:
-            print(results)
             return False
     
     @staticmethod
@@ -113,15 +117,28 @@ class NetworkSniffer:
         newMessage = alertLevel+' - '+formatted_time+' - '+message
         table_name = 'api_alert'
         columns = ['level', 'message', 'acknowledge']
-        values = ['value1', message, False]
+        values = ['value1', newMessage, False]
         db = DatabaseHandler()
         db.connect()
         db.insert_values(table_name, columns, values)
+        db.closeConnection()
         
 
     @staticmethod
-    def checkAlertLevel(checkValue):
-        numFeeds = Feed.objects.count()
+    def checkAlertLevel(value):
+        db = DatabaseHandler()
+        db.connect()
+        search_query = "SELECT count(*) FROM api_feed ;"
+        results = db.execute_query(search_query)
+        print("NumFeeds: {}".format(results[0][0]))
+        numFeeds = results[0][0]
+        search_query = "SELECT * FROM api_value  WHERE value='"+value+"';"
+        results = db.execute_query(search_query)
+        print(results)
+        print("CheckValue: {}".format(results[0][4]))
+        checkValue = results[0][4]
+        db.closeConnection()
+
         preLevel = checkValue/numFeeds
         if preLevel == 1:
             return 'Critical'
@@ -135,4 +152,4 @@ class NetworkSniffer:
 if __name__ == "__main__":
     interface = sys.argv[1]
     sniffer = NetworkSniffer()
-    sniffer.start_sniffer(interface)  # Replace "eth0" with the interface you want to sniff
+    sniffer.start_sniffer(interface) 

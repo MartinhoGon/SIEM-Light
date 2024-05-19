@@ -24,3 +24,12 @@ class ValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Value
         fields = ["id", "value", "type", "checkValue"]
+
+
+class FileUploadSerializer(serializers.Serializer):
+    file = serializers.FileField()
+
+    def validate_file(self, value):
+        if not value.name.endswith(('.log', '.pcap')):
+            raise serializers.ValidationError('File must be a .log or .pcap')
+        return value

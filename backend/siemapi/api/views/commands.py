@@ -64,13 +64,11 @@ class StartSniffer(APIView):
         if request.data.get("interface"):
             interface = request.data.get("interface")
         else:
-            interface = 'ens33'
+            return Response({'message': 'Interface not provided'}, status=400)
         if not helper.is_sniffer_running:
             try:
-                process =  Popen(["python", "networkSniffer.py", interface], stdout=PIPE, stderr=PIPE)
-                # stdout_data, stderr_data = process.communicate()
-                # logger.error(stderr_data)
-                pid = process.pid  # Get the PID of the subprocess
+                cmd = ["python", "networkSniffer.py", interface]
+                process =  Popen(cmd, stdout=PIPE, stderr=PIPE)
                 helper.is_sniffer_running = True
                 helper.sniffer_pid = process.pid
                 helper.save()

@@ -2,6 +2,7 @@ from django.db import models
 from enum import Enum
 import re
 from api.logger import get_logger
+from datetime import datetime
 
 #########
 # Alert #
@@ -43,7 +44,7 @@ class Alert(models.Model):
                 # logger.info('Value Exists {}'.format(value.value))
             alertLevel = Alert.checkAlertLevel(value.checkValue)
             current_time = datetime.now()
-            formatted_time = current_time.strftime("%d-%m-%Y %H:%M:%S")
+            formatted_time = current_time.strftime("%d-%m-%Y-%H%M%S")
             newMessage = alertLevel+' - '+formatted_time+' - '+message
             alert = Alert(level=alertLevel, message=newMessage, acknowledge=False)
             alert.save()
