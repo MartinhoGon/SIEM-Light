@@ -40,9 +40,11 @@ class Parser:
         return alertCounter
 
     def handle_packet(packet, alertCounter):
-        if hasattr(packet, 'dns'):
+        logger = get_logger()
+        if hasattr(packet, 'dns') and hasattr(packet, 'ip'):
             if packet.dns.count_answers > "0":
                 strAlert = ''
+                logger.info("Checking "+ packet.dns.qry_name)
                 if Value.searchValue(packet.dns.qry_name):
                     strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.dns.qry_name,packet.ip.dst)
                     alertCounter = alertCounter + Alert.createAlert(packet.dns.qry_name, strAlert)
