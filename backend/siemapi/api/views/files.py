@@ -6,6 +6,7 @@ from api.serializers import FileUploadSerializer
 import os
 from datetime import datetime
 from api.utils import Parser
+from api.models import Alert
 
 class FileUploadView(APIView):
     def post(self, request, *args, **kwargs):
@@ -23,9 +24,10 @@ class FileUploadView(APIView):
                     destination.write(chunk)
 
             if file_name.endswith('.log'):
-                # Process log file
-                return self.process_log(file)
+                ip_dates = Parser.extractLogInfo(file_path)
+                numAlerts = Alert.validateIpsFromUploadedLogs(ip_dates)
+                return Response({"message": "The uploaded file returned a total of {} alerts.".format(numAlerts)})
             elif file_name.endswith('.pcap'):
                 numAlerts = Parser.parseDnsPcap(file_path)
                 return Response({"message": "The uploaded file returned a total of {} alerts.".format(numAlerts)})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": serializer.errors['file']}, status=status.HTTP_400_BAD_REQUEST)

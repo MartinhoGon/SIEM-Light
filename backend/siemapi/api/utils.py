@@ -61,3 +61,27 @@ class Parser:
                     else:
                         print(packet.dns)
         return alertCounter
+    
+    @staticmethod
+    def extractLogInfo(file_path):
+        """
+        Parses the log file and gets all IP address and corresponding datetime
+        :param log_path:
+        :return: Array with IP address and datetime
+        """
+        ip_datetime_pairs = []
+
+        ip_pattern = r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b"
+        datetime_pattern = r"^\w{3}\s+\d{1,2} \d{2}:\d{2}:\d{2}"
+
+        with open(log_file_path, 'r') as file:
+            for line in file:
+                
+                ip_matches = re.findall(ip_pattern, line)
+                datetime_match = re.match(datetime_pattern, line)
+                if ip_matches and datetime_match:
+
+                    for ip in ip_matches:
+                        ip_datetime_pairs.append((ip, datetime_match.group(0)))
+
+        return ip_datetime_pairs

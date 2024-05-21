@@ -54,7 +54,23 @@ class Alert(models.Model):
             logger.error('There was an error creating a new alert. {}'.format(e))
             return 0
 
+    @staticmethod
+    def validateIpsFromUploadedLogs(ip_dates):
+        logger = get_logger()
+        numAlerts = 0
+        try:
+            logger.info("Validating IPs from uploaded log file.")
+            for pair in ip_dates:
+                # ip = pair[0]
+                value = Value.objects.filter(value=pair[0]).first()
+                if value:
+                    message = 'The IP address {} was detected in the uploaded log file. This IP address is a match to the internal database'.format(pair[0])
+                    numAlerts = numAlerts + Alert.createAlert(pair[0], message)
 
+            return numAlerts
+        except Exception as e:
+            logger.error('There was an error validating {}'.format(e))
+            return 0
         
 ############
 # Category #
