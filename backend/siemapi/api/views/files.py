@@ -36,6 +36,8 @@ class FileUploadView(APIView):
                 current_time = datetime.now()
                 formatted_time = current_time.strftime("%d-%m-%Y-%H:%M:%S")
                 logger.info("{} - Ended parsing the uploaded log file.".format(formatted_time))
+                if os.path.exists(file_path):
+                    os.remove(file_path)
                 return Response({"message": "The uploaded file returned a total of {} alerts.".format(numAlerts)}, status=200)
             elif file_name.endswith('.pcap'):
                 current_time = datetime.now()
@@ -47,5 +49,7 @@ class FileUploadView(APIView):
                 current_time = datetime.now()
                 formatted_time = current_time.strftime("%d-%m-%Y-%H:%M:%S")
                 logger.info("{} - Ended parsing the uploaded pcap file.".format(formatted_time))
+                if os.path.exists(file_path):
+                    os.remove(file_path)
                 return Response({"message": "The uploaded file returned a total of {} alerts.".format(numAlerts)}, status=200)
         return Response({"message": serializer.errors['file']}, status=status.HTTP_400_BAD_REQUEST)
