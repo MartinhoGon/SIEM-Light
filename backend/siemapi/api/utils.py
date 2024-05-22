@@ -1,6 +1,7 @@
 import requests, pyshark
 from api.models import Value, Alert
 from api.logger import get_logger
+import re
 
 class DataFetcher:
     @staticmethod
@@ -61,9 +62,34 @@ class Parser:
                             strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.ptr_domain_name,packet.ip.dst)
                             alertCounter = alertCounter + Alert.createAlert(packet.dns.qry_name, strAlert)
                     else:
-                        print(packet.dns)
+                        pass
+                        # print(packet.dns)
+        elif hasattr(packet, 'dns') and hasattr(packet, 'ipv6'):
+            if packet.dns.count_answers > "0":
+                strAlert = ''
+                logger.info("Checking "+ packet.dns.qry_name)
+                if Value.searchValue(packet.dns.qry_name):
+                    strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.dns.qry_name,packet.ipv6.dst)
+                    alertCounter = alertCounter + Alert.createAlert(packet.dns.qry_name, strAlert)
+                if Value.searchValue(packet.ipv6.src):
+                    strAlert = "This IP Address {} returned a response to a DNS query from {}. This IP address is a match to the internal database.".format(packet.ipv6.src,packet.ipv6.dst)
+                    alertCounter = alertCounter + Alert.createAlert(packet.dns.qry_name, strAlert)
+                if hasattr(packet.dns, "a"):
+                    if Value.searchValue(packet.dns.a):
+                        strAlert = "A DNS request returned a known malicious IP address ({}) from a query made by {}. This IP address is a match to the internal database.".format(packet.ipv6.a,packet.ipv6.src)
+                        alertCounter = alertCounter + Alert.createAlert(packet.dns.a, strAlert)
+                else:
+                    if hasattr(packet.dns,'ptr_domain_name'):
+                        if Value.searchValue(packet.dns.ptr_domain_name):
+                            strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.ptr_domain_name,packet.ipv6.dst)
+                            alertCounter = alertCounter + Alert.createAlert(packet.dns.qry_name, strAlert)
+                    else:
+                        pass
+                        # print(packet.dns)
         return alertCounter
-    
+
+
+
     @staticmethod
     def extractLogInfo(file_path):
         """
@@ -76,14 +102,18 @@ class Parser:
         ip_pattern = r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b"
         datetime_pattern = r"^\w{3}\s+\d{1,2} \d{2}:\d{2}:\d{2}"
 
-        with open(log_file_path, 'r') as file:
+        with open(file_path, 'r') as file:
             for line in file:
-                
                 ip_matches = re.findall(ip_pattern, line)
+                # print(ip_matches)
                 datetime_match = re.match(datetime_pattern, line)
-                if ip_matches and datetime_match:
+                if ip_matches:
 
                     for ip in ip_matches:
-                        ip_datetime_pairs.append((ip, datetime_match.group(0)))
-
+                        # print(ip)
+                        datetime = '--'
+                        if datetime_match:
+                            if datetime_match.group(0):
+                                datetime = datetime_match.group(0)
+                        ip_datetime_pairs.append((ip, datetime))
         return ip_datetime_pairs
