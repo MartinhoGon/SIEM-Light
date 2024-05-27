@@ -19,6 +19,10 @@ class FileUploadView(APIView):
             current_time = datetime.now()
             formatted_time = current_time.strftime("%d-%m-%Y-%H%M%S")
             file_name = formatted_time+'_'+file.name
+
+            folder_path = os.path.join(settings.BASE_DIR, 'file_uploads')
+            if not os.path.exists(folder_path):
+                os.makedirs(folder_path)
             
             file_path = os.path.join(settings.BASE_DIR,'file_uploads', file_name)
             with open(file_path, 'wb') as destination:

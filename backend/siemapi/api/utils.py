@@ -45,7 +45,7 @@ class Parser:
         if hasattr(packet, 'dns') and hasattr(packet, 'ip'):
             if packet.dns.count_answers > "0":
                 strAlert = ''
-                logger.info("Checking "+ packet.dns.qry_name)
+                # logger.info("Checking "+ packet.dns.qry_name)
                 if Value.searchValue(packet.dns.qry_name):
                     strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.dns.qry_name,packet.ip.dst)
                     alertCounter = alertCounter + Alert.createAlert(packet.dns.qry_name, strAlert)
@@ -67,7 +67,7 @@ class Parser:
         elif hasattr(packet, 'dns') and hasattr(packet, 'ipv6'):
             if packet.dns.count_answers > "0":
                 strAlert = ''
-                logger.info("Checking "+ packet.dns.qry_name)
+                # logger.info("Checking "+ packet.dns.qry_name)
                 if Value.searchValue(packet.dns.qry_name):
                     strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.dns.qry_name,packet.ipv6.dst)
                     alertCounter = alertCounter + Alert.createAlert(packet.dns.qry_name, strAlert)
