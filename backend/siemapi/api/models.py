@@ -190,4 +190,5 @@ class Helper(models.Model):
     listener_pid = models.IntegerField(null=True, blank=True)
     is_sniffer_running = models.BooleanField(default=False)
     sniffer_pid = models.IntegerField(null=True, blank=True)
+    is_using_rsync = models.BooleanField(default=False)
 
