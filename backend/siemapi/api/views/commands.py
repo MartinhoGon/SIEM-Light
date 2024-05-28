@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from subprocess import Popen, PIPE
 # import subprocess
 from api.models import Helper
-from api.utils import get_logger, Parser
+from api.utils import Parser
+from api.logger import get_logger
 
 class StartListener(APIView):
     def post(self, request):
@@ -28,10 +29,10 @@ class StartListener(APIView):
                     helper.listener_pid = process.pid
                     helper.save()
                     logger.info('Started the listener')
-                    return Response({"message": "Listener started successfully."})  
+                    return Response({"message": "Listener started successfully."}, status=200)  
             except Exception as e:
                 logger.error('Error while starting the listener')
-                return Response({"message": "Error while starting the listener. {}".format(e)})
+                return Response({"message": "Error while starting the listener. {}".format(e)}, status=400)
         else:
             return Response({"message": "Listener is already running."})
 
@@ -48,11 +49,11 @@ class StopListener(APIView):
                 helper.save()
                 numAlerts = Parser.parseDnsPcap('file.pcap')
                 logger.info('Listener stopped successfuly')
-                return Response({"message": "Listener stopped. The DNS capture returned a total of {} alerts.".format(numAlerts)})
+                return Response({"message": "Listener stopped. The DNS capture returned a total of {} alerts.".format(numAlerts)}, status=200)
             else:
-                return Response({"message": "Listener is not running."})
+                return Response({"message": "Listener is not running."}, status=200)
         else:
-            return Response({"message": "Listener is not running."})
+            return Response({"message": "Listener is not running."}, status=200)
 
 class StartSniffer(APIView):
     def post(self, request):
@@ -76,10 +77,10 @@ class StartSniffer(APIView):
                 return Response({"message": "Sniffer started successfully."}, status=200)
             except Exception as e:
                 logger.error('Error while starting the sniffer')
-                return Response({"message": "Error while starting the sniffer. {}".format(e)})
+                return Response({"message": "Error while starting the sniffer. {}".format(e)}, status=400)
                 # return JsonResponse({"error": str(e)}, status=500)
         else: 
-            return Response({"message": "Sniffer is already running."})
+            return Response({"message": "Sniffer is already running."}, status=200)
 
 
 class StopSniffer(APIView):
@@ -93,8 +94,8 @@ class StopSniffer(APIView):
                 helper.sniffer_pid = 0
                 helper.save()
                 logger.info('Sniffer stopped successfuly')
-                return Response({"message": "Sniffer stopped. Check the alerts to see if any were created"})
+                return Response({"message": "Sniffer stopped. Check the alerts to see if any were created"}, status=200)
             else:
-                return Response({"message": "Sniffer is not running."})
+                return Response({"message": "Sniffer is not running."}, status=200)
         else:
-            return Response({"message": "Sniffer is not running."})
+            return Response({"message": "Sniffer is not running."}, status=200)

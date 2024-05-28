@@ -21,4 +21,5 @@ urlpatterns = [
     path('start-sniffer/', StartSniffer.as_view()),
     path('stop-sniffer/', StopSniffer.as_view()),
     path('upload-file/', FileUploadView.as_view()),
+    path('get-stats/', GetStats.as_view()),
 ]
