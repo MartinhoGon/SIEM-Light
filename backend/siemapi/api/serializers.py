@@ -4,7 +4,7 @@ from api.models import *
 class AlertSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alert
-        fields = ["id", "level", "message", "acknowledge"]
+        fields = ["id", "level", "message", "acknowledge", 'created_at']
 
 
 
@@ -24,6 +24,12 @@ class ValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Value
         fields = ["id", "value", "type", "checkValue"]
+
+
+class HelperSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Helper
+        fields = ["id", "is_listener_running", "listener_pid", "is_sniffer_running", "sniffer_pid", "is_using_rsync"]
 
 
 class FileUploadSerializer(serializers.Serializer):

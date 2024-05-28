@@ -7,13 +7,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-#Get a list of all alerts
-# def alertList(request):
-#     alerts = Alert.objects.all()
-#     serializer = AlertSerializer(alerts, many=True)
-#     return Response(serializer.data, safe=False)
-
-
 class AlertList(APIView):
     """
     List all alerts, or create a new snippet.
@@ -44,7 +37,13 @@ class AlertDetail(APIView):
         alert = self.get_object(pk)
         serializer = AlertSerializer(alert)
         return Response(serializer.data)
-
+    
+    def put(self, request, pk, format=None):
+        alert = self.get_object(pk)
+        alert.acknowledge = True
+        alert.save()
+        serializer = AlertSerializer(alert)
+        return Response(serializer.data)
     # def put(self, request, pk, format=None):
     #     alert = self.get_object(pk)
     #     serializer = AlertSerializer(alert, data=request.data)

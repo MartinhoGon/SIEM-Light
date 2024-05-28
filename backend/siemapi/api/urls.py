@@ -16,6 +16,8 @@ urlpatterns = [
     path('value/<int:pk>/', ValueDetail.as_view()),
     path('alert/', AlertList.as_view()),
     path('alert/<int:pk>/', AlertDetail.as_view()),
+    path('helper/<int:pk>/', HelperDetail.as_view()),
+    # path('ack-alert/<int:pk>/', AlertAcknowledge.as_view()),
     path('start-listener/', StartListener.as_view()),
     path('stop-listener/', StopListener.as_view()),
     path('start-sniffer/', StartSniffer.as_view()),
