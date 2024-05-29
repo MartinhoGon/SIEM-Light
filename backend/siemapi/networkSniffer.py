@@ -72,7 +72,7 @@ class NetworkSniffer:
                     if packet.dns.count_answers > "0":
                         strAlert = ''
                         if NetworkSniffer.searchValue(packet.dns.qry_name):
-                            strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.dns.qry_name,packet.ip.dst)
+                            strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database.'.format(packet.dns.qry_name,packet.ip.dst)
                             NetworkSniffer.insertAlert(packet.dns.qry_name, strAlert)
                         if NetworkSniffer.searchValue(packet.ip.src):
                             strAlert = "This IP Address {} returned a response to a DNS query from {}. This IP address is a match to the internal database.".format(packet.ip.src,packet.ip.dst)
@@ -84,11 +84,11 @@ class NetworkSniffer:
                         else:
                             if hasattr(packet.dns,'ptr_domain_name'):
                                 if NetworkSniffer.searchValue(packet.dns.ptr_domain_name):
-                                    strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database'.format(packet.ptr_domain_name,packet.ip.dst)
+                                    strAlert = 'A DNS request to {} was made from {}. This domain is a match to the internal database.'.format(packet.ptr_domain_name,packet.ip.dst)
                                     NetworkSniffer.insertAlert(packet.dns.qry_name, strAlert)
                             else:
                                 if NetworkSniffer.searchValue(packet.dns.cname):
-                                    strAlert = 'A DNS request to the CNAME {} was made from {}. This CNAME is a match to the internal database'.format(packet.ptr_domain_name,packet.ip.dst)
+                                    strAlert = 'A DNS request to the CNAME {} was made from {}. This CNAME is a match to the internal database.'.format(packet.ptr_domain_name,packet.ip.dst)
                                     NetworkSniffer.insertAlert(packet.dns.cname, strAlert)
                                 # print(packet.dns)
                                 # print(packet.dns.cname)
