@@ -15,6 +15,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class FeedSerializer(serializers.ModelSerializer):
+    category = CategorySerializer()
     class Meta:
         model = Feed
         fields = ["id", "category", "name", "url", "parser", "refresh", 'delimeter', "delimeterField"]

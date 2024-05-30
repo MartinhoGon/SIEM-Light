@@ -12,7 +12,7 @@ class AlertList(APIView):
     List all alerts, or create a new snippet.
     """
     def get(self, request, format=None):
-        alerts = Alert.objects.all()
+        alerts = Alert.objects.order_by('-created_at').all()
         serializer = AlertSerializer(alerts, many=True)
         return Response(serializer.data)
 

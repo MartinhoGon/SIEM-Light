@@ -12,6 +12,46 @@ class DataFetcher:
             return response.json() if response.headers.get('content-type') == 'application/json' else response.content
         else:
             return None
+        
+class Formater:
+    @staticmethod
+    def format_integer(value, decimal_delimiter=',', thousand_delimiter='.', million_delimiter=' '):
+        """
+        Formats an integer or float using specified delimiters for decimals, thousands, and millions.
+
+        Parameters:
+        value (int): The integer value to format.
+        decimal_delimiter (str): The delimiter for decimals.
+        thousand_delimiter (str): The delimiter for thousands.
+        million_delimiter (str): The delimiter for millions.
+
+        Returns:
+        str: The formatted integer as a string.
+        """
+        if not isinstance(value, (int, float)):
+            raise ValueError("The value must be an integer or float.")
+        
+        value_str = f"{value:.2f}" 
+        integer_part, decimal_part = value_str.split('.')
+        
+        integer_part_reversed = integer_part[::-1]
+        
+        chunks = [integer_part_reversed[i:i+3] for i in range(0, len(integer_part_reversed), 3)]
+        
+        formatted_integer = thousand_delimiter.join(chunks)
+        
+        formatted_integer = formatted_integer[::-1]
+        
+        if million_delimiter:
+            million_chunks = formatted_integer.split(thousand_delimiter)
+            formatted_integer = million_delimiter.join(million_chunks)
+        
+        if decimal_part == "00":
+            formatted_number = formatted_integer
+        else:
+            formatted_number = formatted_integer + decimal_delimiter + decimal_part
+        
+        return formatted_number
 
 class Parser:
     @staticmethod
