@@ -6,3 +6,4 @@ from .commands import *
 from .files import *
 from .stats import *
 from .helper import *
+from .os import *

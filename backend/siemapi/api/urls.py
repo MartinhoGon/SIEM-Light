@@ -24,4 +24,5 @@ urlpatterns = [
     path('stop-sniffer/', StopSniffer.as_view()),
     path('upload-file/', FileUploadView.as_view()),
     path('get-stats/', GetStats.as_view()),
+    path('network-interfaces/', OsInterface.as_view()),
 ]
