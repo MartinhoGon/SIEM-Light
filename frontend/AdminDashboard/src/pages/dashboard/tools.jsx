@@ -23,7 +23,7 @@ export function Tools() {
     const [switchStates, setSwitchStates] = useState({
         is_listener_running: false,
         is_sniffer_running: false,
-        is_using_rsync: false,
+        is_using_rsyslog: false,
     });
 
     const [selectedFile, setSelectedFile] = useState(null);
@@ -50,7 +50,7 @@ export function Tools() {
             setSwitchStates({
                 is_listener_running: response.data.is_listener_running,
                 is_sniffer_running: response.data.is_sniffer_running,
-                is_using_rsync: response.data.is_using_rsync,
+                is_using_rsyslog: response.data.is_using_rsyslog,
             });
           })
           .catch(function (error) {
@@ -155,7 +155,7 @@ export function Tools() {
                 handleRequests('is_sniffer_running', event.target.checked, endpoints.startSniffer, {
                     "interface": sniffingInterface
                 })
-            }else if(name === "is_using_rsync"){
+            }else if(name === "is_using_rsyslog"){
 
             }
         }else {
@@ -163,7 +163,7 @@ export function Tools() {
                 handleRequests('is_listener_running', event.target.checked, endpoints.stopListener)
             }else if(name === "is_sniffer_running"){
                 handleRequests("is_sniffer_running", event.target.checked, endpoints.stopSniffer)
-            }else if(name === "is_using_rsync"){
+            }else if(name === "is_using_rsyslog"){
                 
             }
         }
@@ -235,9 +235,9 @@ export function Tools() {
                                 <Switch
                                 key={3}
                                 id={3}
-                                label={"Use rsync"}
-                                checked={switchStates['is_using_rsync']}
-                                onChange={(event) => onChangeSwitch(event,'is_using_rsync')}
+                                label={"Use rsyslog"}
+                                checked={switchStates['is_using_rsyslog']}
+                                onChange={(event) => onChangeSwitch(event,'is_using_rsyslog')}
                                 labelProps={{
                                     className: "text-sm font-normal text-blue-gray-500",
                                 }}

@@ -130,7 +130,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CRONJOBS = [
+    #runs every minute
     ('*/1 * * * *', 'api.management.cronjobs.fetch_data.get_feed', '>> ' + os.path.join(BASE_DIR,'log/cron.log' + ' 2>&1 ')),
+    #runs every minute
+    ('*/1 * * * *', 'api.management.cronjobs.rsyslog_parser.parseLogFiles', '>> ' + os.path.join(BASE_DIR,'log/cron.log' + ' 2>&1 ')),
     # Add more cron jobs as needed
 ]
 

@@ -73,6 +73,24 @@ class Alert(models.Model):
             logger.error('There was an error validating {}'.format(e))
             return 0
         
+    @staticmethod
+    def validateIpsFromRsyslog(ip_dates, file_path):
+        logger = get_logger()
+        numAlerts = 0
+        try:
+            logger.info("Validating IPs Syslog file '{}'.".format(file_path))
+            for pair in ip_dates:
+                # ip = pair[0]
+                value = Value.objects.filter(value=pair[0]).first()
+                if value:
+                    message = "The IP address {} was detected in the '{}' file. This IP address is a match to the internal database".format(pair[0], file_path)
+                    Alert.createAlert(pair[0], message)
+
+            return numAlerts
+        except Exception as e:
+            logger.error('There was an error validating the file from syslog {}'.format(e))
+            return 0
+        
 ############
 # Category #
 ############
@@ -191,5 +209,5 @@ class Helper(models.Model):
     listener_pid = models.IntegerField(null=True, blank=True)
     is_sniffer_running = models.BooleanField(default=False)
     sniffer_pid = models.IntegerField(null=True, blank=True)
-    is_using_rsync = models.BooleanField(default=False)
+    is_using_rsyslog = models.BooleanField(default=False)
 

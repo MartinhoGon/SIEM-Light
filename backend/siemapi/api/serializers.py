@@ -30,7 +30,7 @@ class ValueSerializer(serializers.ModelSerializer):
 class HelperSerializer(serializers.ModelSerializer):
     class Meta:
         model = Helper
-        fields = ["id", "is_listener_running", "listener_pid", "is_sniffer_running", "sniffer_pid", "is_using_rsync"]
+        fields = ["id", "is_listener_running", "listener_pid", "is_sniffer_running", "sniffer_pid", "is_using_rsyslog"]
 
 
 class FileUploadSerializer(serializers.Serializer):
