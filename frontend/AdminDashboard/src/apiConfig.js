@@ -2,6 +2,7 @@ const API_BASE_URL = "http://127.0.0.1:8000/api"
 
 const endpoints = {
     getHelper: `${API_BASE_URL}/helper/1/`,
+    putHelper: `${API_BASE_URL}/helper/1/`, 
     startListener: `${API_BASE_URL}/start-listener/`,
     stopListener: `${API_BASE_URL}/stop-listener/`,
     startSniffer: `${API_BASE_URL}/start-sniffer/`,

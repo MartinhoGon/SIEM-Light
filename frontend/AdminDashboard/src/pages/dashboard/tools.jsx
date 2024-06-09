@@ -118,6 +118,28 @@ export function Tools() {
        
     };
 
+    const handleRequestsPut = async (name, value, endpoint, data={}) => await axios.put(endpoint, 
+        data)
+        .then(function (response) {
+            setShowAlerts({
+                active: true,
+                message: value ? "Rsyslog is now configured, the application will parse rsyslog logs every X hours." : "Rsyslog turned off successfully." ,
+                color: 'green'
+            })
+            setSwitchStates((prevState) => ({
+                ...prevState,
+                [name]: value
+            }))
+        })
+        .catch(function (error) {
+            console.log(error);
+            setShowAlerts({
+                active: true,
+                message: error.response ? error.response.data.message: "An error has occoured.",
+                color: 'red'
+            })
+        });
+
     const handleRequests = async (name, value, endpoint, data={}) => await axios.post(endpoint, 
         data)
         .then(function (response) {
@@ -145,6 +167,14 @@ export function Tools() {
         
         if(event.target.checked == true){
             if(name === "is_listener_running"){
+                if(port < "1024" || port > "65535" ){
+                    setShowAlerts({
+                        active: true,
+                        message: "The choosen port must be between 1024 and 65535",
+                        color: 'red'
+                    });
+                    return
+                }
                 handleRequests('is_listener_running', event.target.checked, endpoints.startListener, {
                     "port": port
                 })
@@ -161,7 +191,7 @@ export function Tools() {
                     "interface": sniffingInterface
                 })
             }else if(name === "is_using_rsyslog"){
-
+                handleRequestsPut('is_using_rsyslog', event.target.checked, endpoints.putHelper, {"is_using_rsyslog": true})
             }
         }else {
             if(name === "is_listener_running"){
@@ -169,7 +199,7 @@ export function Tools() {
             }else if(name === "is_sniffer_running"){
                 handleRequests("is_sniffer_running", event.target.checked, endpoints.stopSniffer)
             }else if(name === "is_using_rsyslog"){
-                
+                handleRequestsPut('is_using_rsyslog', event.target.checked, endpoints.putHelper,{"is_using_rsyslog": false})
             }
         }
     }
