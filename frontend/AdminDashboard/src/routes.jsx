@@ -5,7 +5,7 @@ import {
   InformationCircleIcon,
   CircleStackIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Alerts, Feeds, Notifications, Tools } from "@/pages/dashboard";
+import { Home, Profile, Alerts, Feeds, Notifications, Tools} from "@/pages/dashboard";
 // import { SignIn, SignUp } from "@/pages/auth";
 
 const icon = {

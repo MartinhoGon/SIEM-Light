@@ -16,13 +16,18 @@ class StartListener(APIView):
             helper = Helper.objects.first()
         else:
             helper = Helper.objects.create()
+
+        if request.data.get("port"):
+            port = str(request.data.get("port"))
+        else:
+            port = "32000"
         
         if not helper.is_listener_running:
             # Start netcat listener
             #process = Popen(['nc -l 32000 > file.pcap'], shell=True, stdout=PIPE, stderr=PIPE)
             try:
                 with open('file.pcap', 'wb') as output_file:
-                    command = ["nc", "-l", "32000"]
+                    command = ["nc", "-l", port]
                     process = Popen(command, stdout=output_file, stderr=PIPE)
                     pid = process.pid  # Get the PID of the subprocess
                     helper.is_listener_running = True

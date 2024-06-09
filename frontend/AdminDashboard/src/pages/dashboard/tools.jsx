@@ -8,7 +8,8 @@ import {
     Button,
     Switch,
     Alert,
-    Radio
+    Radio,
+    Input
   } from "@material-tailwind/react";
 import endpoints from '@/apiConfig'; // Adjust the path as needed
 import { DefaultDialog } from '@/widgets/layout/dialog';
@@ -27,6 +28,8 @@ export function Tools() {
     });
 
     const [selectedFile, setSelectedFile] = useState(null);
+
+    const [port, setPort] = useState("32000");
 
     const [interfaces, setInterfaces] = useState([]);
     const [sniffingInterface, setSniffingInterface] = useState(null);
@@ -142,7 +145,9 @@ export function Tools() {
         
         if(event.target.checked == true){
             if(name === "is_listener_running"){
-                handleRequests('is_listener_running', event.target.checked, endpoints.startListener)
+                handleRequests('is_listener_running', event.target.checked, endpoints.startListener, {
+                    "port": port
+                })
             }else if(name === "is_sniffer_running"){
                 if(sniffingInterface === null){
                     setShowAlerts({
@@ -206,6 +211,15 @@ export function Tools() {
                                     className: "text-sm font-normal text-blue-gray-500",
                                 }}
                                 />
+                            </div>
+                            <div className="flex flex-col gap-0">
+                                <Typography variant="small" color="blue-gray" className="gap-2">
+                                    Select a port for the listener
+                                </Typography>
+                                <div className="">
+                                
+                                    <Input className="" value={port} onChange={(event) => setPort(event.target.value)} />
+                                </div>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <Switch
@@ -280,9 +294,9 @@ export function Tools() {
                         </Typography>
                     </CardHeader>
                     <CardBody className="pt-0">
-                        <div className="flex flex-col gap-6">
-                            <div className="flex flex-col gap-6">
-                                <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-2">
+                                <div className="flex flex-col gap-2">
                                 <label
                                     htmlFor="formFile"
                                     className="mb-2 inline-block text-neutral-700 dark:text-neutral-200"
@@ -296,7 +310,7 @@ export function Tools() {
                                     onChange={handleFileChange}
                                 />
                                 </div>
-                                <div  className="flex flex-col gap-6">
+                                <div  className="flex flex-col gap-2">
                                     <Button onClick={handleUpload} variant="outlined" size="sm">
                                         Upload file
                                     </Button>
