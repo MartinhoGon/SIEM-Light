@@ -27,13 +27,13 @@ class Alert(models.Model):
     def checkAlertLevel(checkValue):
         numFeeds = Feed.objects.count()
         preLevel = checkValue/numFeeds
-        if preLevel == 1:
+        if preLevel >= 0.9:
             return 'Critical'
-        elif 0.9 <= preLevel <= 1:
-            return 'High'
         elif 0.4 <= preLevel < 0.9:
-            return 'Medium'
+            return 'High'
         elif 0.24 <= preLevel < 0.4:
+            return 'Medium'
+        elif 0 < preLevel < 0.24:
             return 'Low'
     
     @staticmethod
