@@ -132,7 +132,7 @@ class Feed(models.Model):
 class ValueType(Enum):
     DOMAIN = 'Domain'
     IP_ADDRESS = 'IP Address'
-    PORT = "Port"
+    # PORT = "Port"
 
 class Value(models.Model):
     type = models.CharField(max_length=20, choices=[(tag.value, tag.name) for tag in ValueType])
