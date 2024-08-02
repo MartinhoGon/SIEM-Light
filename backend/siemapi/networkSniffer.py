@@ -116,8 +116,8 @@ class NetworkSniffer:
         formatted_time = current_time.strftime("%d-%m-%Y %H:%M:%S")
         newMessage = alertLevel+' - '+formatted_time+' - '+message
         table_name = 'api_alert'
-        columns = ['level', 'message', 'acknowledge']
-        values = [alertLevel, newMessage, False]
+        columns = ['level', 'message', 'acknowledge', 'created_at']
+        values = [alertLevel, newMessage, False, current_time]
         db = DatabaseHandler()
         db.connect()
         db.insert_values(table_name, columns, values)

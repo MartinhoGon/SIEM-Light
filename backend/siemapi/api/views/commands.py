@@ -2,12 +2,14 @@ from rest_framework.views import APIView
 import os
 from signal import SIGTERM
 import time
+import psutil
 from rest_framework.response import Response
 from subprocess import Popen, PIPE
 # import subprocess
 from api.models import Helper
 from api.utils import Parser
 from api.logger import get_logger
+from api.serializers import PortSerializer
 
 class StartListener(APIView):
     def post(self, request):
@@ -18,7 +20,13 @@ class StartListener(APIView):
             helper = Helper.objects.create()
 
         if request.data.get("port"):
-            port = str(request.data.get("port"))
+            serializer = PortSerializer(data=request.data)
+            if serializer.is_valid():
+                if int(request.data.get("port")) < 1024:
+                    return Response({"message": "The choosen port must be between 1024 and 65535."}, status=400)
+                port = str(request.data.get("port"))
+            else:
+                return Response(serializer.errors, status=400)
         else:
             port = "32000"
         
@@ -69,6 +77,10 @@ class StartSniffer(APIView):
             helper = Helper.objects.create()
         if request.data.get("interface"):
             interface = request.data.get("interface")
+            interfaces = psutil.net_if_addrs()
+
+            if interface not in interfaces:
+                return Response({"message": "Invalid interface."}, status=400)
         else:
             return Response({'message': 'Interface not provided'}, status=400)
         if not helper.is_sniffer_running:

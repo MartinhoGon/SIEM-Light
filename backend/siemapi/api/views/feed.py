@@ -16,7 +16,7 @@ from rest_framework import status
 
 class FeedList(APIView):
     """
-    List all feeds, or create a new snippet.
+    List all feeds, or create a new regestry.
     """
     def get(self, request, format=None):
         feeds = Feed.objects.all()

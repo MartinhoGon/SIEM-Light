@@ -19,7 +19,7 @@ class GetStats(APIView):
             serialized_alerts = AlertSerializer(lastAlerts, many=True).data
             return Response({"numFeeds": numFeeds, "numAlerts": numAlerts, "numUnseenAlerts": numUnseenAlerts, "numValues": numValues, "lastAlerts": serialized_alerts})
         except Exception as e:
-                logger.error('Error while getting statistics {}'. format(e))
-                return Response({"message": "Error while getting statistics"}, status=400)
+            logger.error('Error while getting statistics {}'. format(e))
+            return Response({"message": "Error while getting statistics"}, status=400)
 
         

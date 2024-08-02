@@ -40,3 +40,7 @@ class FileUploadSerializer(serializers.Serializer):
         if not value.name.endswith(('.log', '.pcap')):
             raise serializers.ValidationError('File must be a .log or .pcap')
         return value
+    
+
+class PortSerializer(serializers.Serializer):
+    port = serializers.IntegerField()
