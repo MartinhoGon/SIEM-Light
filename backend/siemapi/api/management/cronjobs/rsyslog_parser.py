@@ -6,11 +6,11 @@ import os
 
 def parseLogFiles():
     logger = get_logger()
+    helper = Helper.objects.first()
     if helper.is_using_rsyslog:
         current_datetime = datetime.now()
         formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
         logger.info("{} - Started parsing the syslog folder.".format(formatted_datetime))
-        helper = Helper.objects.first()
         # Case its running rsyslog
         # Gets the folder were the remote logs are
         remotelogs_folder = "/var/log/remotelogs/" 
