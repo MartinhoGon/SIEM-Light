@@ -17,11 +17,13 @@ def parseLogFiles():
         try:
             for root, dirs, files in os.walk(remotelogs_folder):
                 for file_name in files:
+                    logger.info("file_name - {}".format(file_name))
                     # if file_name.endswith('.log'):  # Check if the file is a log file
                     file_path = os.path.join(root, file_name)
                     logger.info("Parsing file '{}'.".format(file_path))
                     ip_datetime_pairs = Parser.extractLogInfo(file_path)
                     Alert.validateIpsFromRsyslog(ip_datetime_pairs, file_path)
+                    # os.remove(file_path)
         except Exception as e:
             logger.error("An error occorred while parsing the rsyslog files. {}".format(e))
         current_datetime = datetime.now()
