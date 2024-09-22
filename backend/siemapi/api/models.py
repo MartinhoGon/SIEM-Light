@@ -144,11 +144,12 @@ class Value(models.Model):
 
     @staticmethod
     def decrementCheckValue():
+        Value.objects.all().update(checkValue=models.F('checkValue') - 1)
         # rever este codigo fazer Query direta
-        values = Value.objects.all()
-        for value in values:
-            value.checkValue -= 1
-            value.save()
+        # values = Value.objects.all()
+        # for value in values:
+        #     value.checkValue -= 1
+        #     value.save()
 
     @staticmethod
     def checkType(value):     

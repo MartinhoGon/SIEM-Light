@@ -114,6 +114,12 @@ class NetworkSniffer:
         alertLevel = NetworkSniffer.checkAlertLevel(value)
         current_time = datetime.now()
         formatted_time = current_time.strftime("%d-%m-%Y %H:%M:%S")
+        # print("1")
+        # print(type(alertLevel))
+        # print("2")
+        # print(type(formatted_time))
+        # print("3")
+        # print(type(message))
         newMessage = alertLevel+' - '+formatted_time+' - '+message
         table_name = 'api_alert'
         columns = ['level', 'message', 'acknowledge', 'created_at']
@@ -140,7 +146,7 @@ class NetworkSniffer:
         db.closeConnection()
 
         preLevel = checkValue/numFeeds
-        if preLevel == 1:
+        if preLevel >= 1:
             return 'Critical'
         elif 0.9 <= preLevel <= 1:
             return 'High'

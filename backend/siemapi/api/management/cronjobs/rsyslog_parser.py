@@ -23,7 +23,7 @@ def parseLogFiles():
                     logger.info("Parsing file '{}'.".format(file_path))
                     ip_datetime_pairs = Parser.extractLogInfo(file_path)
                     Alert.validateIpsFromRsyslog(ip_datetime_pairs, file_path)
-                    # os.remove(file_path)
+                    os.remove(file_path)
         except Exception as e:
             logger.error("An error occorred while parsing the rsyslog files. {}".format(e))
         current_datetime = datetime.now()

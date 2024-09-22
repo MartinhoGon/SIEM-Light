@@ -39,7 +39,7 @@ export function Tools() {
     };
 
     const [open, setOpen] = useState(false);
-    const [dialogMessage, setDialogMessage] = useState("This operation may take a while, please be patiant.");
+    const [dialogMessage, setDialogMessage] = useState("This operation may take a while, please be patient.");
 
     const handleOpen = () => setOpen(!open);
 
